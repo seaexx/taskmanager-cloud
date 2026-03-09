@@ -30,9 +30,9 @@ secret.yml
 # Environment files
 .env
 .env.*
-!.env.example
-!.env.template
-!.env.sample
+.env.example
+.env.template
+.env.sample
 
 # Credentials and config files
 credentials.json

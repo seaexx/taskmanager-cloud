@@ -6,4 +6,11 @@ resources:
 - postgres-deployment.yaml
 - postgres-service.yaml
 - postgres-secret.yaml
-- postgres-config.yaml
+
+configMapGenerator:
+  - name: postgres-config
+    literals:
+      - POSTGRES_DB=taskdb
+
+
+

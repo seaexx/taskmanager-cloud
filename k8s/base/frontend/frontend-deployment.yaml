@@ -20,7 +20,7 @@ spec:
         envFrom:
         - configMapRef:
             name: frontend-config
-        imagePullPolicy: Never
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "64Mi"

@@ -4,4 +4,8 @@ kind: Kustomization
 resources:
 - frontend-deployment.yaml
 - frontend-service.yaml
-- frontend-config.yaml
+
+configMapGenerator:
+  - name: frontend-config
+    literals:
+      - API_URL=http://backend:3000

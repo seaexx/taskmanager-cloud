@@ -5,5 +5,21 @@ resources:
 - backend-deployment.yaml
 - backend-service.yaml
 - backend-hpa.yaml
-- backend-secret.yaml
-- backend-config.yaml
+
+# Generate ConfigMap from key-value pairs
+configMapGenerator:
+  - name: backend-config
+    literals:
+      - DB_HOST:postgres
+      - DB_PORT:"5432"
+      - DB_NAME:taskdb
+      - PORT:3000
+      - REDIS_HOST:redis
+      - REDIS_PORT:6379
+  
+# Generate Secret from key-value pairs
+secretGenerator:
+  - name: backend-secret
+    literals:
+      - DB_USER:postgres
+      - DB_PASSWORD=REPLACE_IN_OVERLAY
