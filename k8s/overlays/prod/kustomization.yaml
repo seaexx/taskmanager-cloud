@@ -6,48 +6,48 @@ resources:
 - namespace.yaml
 - ../../base
 
-# Deploy to dev namespace
-namespace: dev
+# Deploy to staging namespace
+namespace: prod
 
-# Add -dev suffix to all resources
-nameSuffix: -dev
+# Add -staging suffix to all resources
+nameSuffix: -prod
 
 # Add common labels to everything
 commonLabels:
-  environment: dev
+  environment: prod
   app.kubernetes.io/managed-by: kustomize
 
-# Override ConfigMap for dev
+# Override ConfigMap for prod
 configMapGenerator:
 - name: backend-config
   behavior: merge
   literals:
-  - DB_HOST=postgres-dev  
-  - REDIS_HOST=redis-dev  
+  - DB_HOST=postgres-prod 
+  - REDIS_HOST=redis-prod
   - LOG_LEVEL=debug   
 
 - name: postgres-config
   behavior: merge
   literals:
-  - POSTGRES_DB=taskdb-dev
+  - POSTGRES_DB=taskdb-prod
 
 
-# Override Secret for dev
+# Override Secret for prod
 secretGenerator:
 - name: backend-secret
   behavior: merge
   literals:
-  - DB_PASSWORD=devpassword123 
+  - DB_PASSWORD=prod_password123 
 
 - name: postgres-secret
   behavior: merge
   literals:
-  - POSTGRES_PASSWORD:devdbpassword123
+  - POSTGRES_PASSWORD:prod_dbpassword123
 
 patchesStrategicMerge:
 - secrets-patch.yaml
 
-# Set resource limits (lower for dev)
+# Set resource limits ( max for prod)
 patches:
 - patch: |-
     - op: replace
@@ -61,7 +61,7 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/replicas
-      value: 1
+      value: 3
   target:
     kind: Deployment
     name: backend
@@ -70,19 +70,28 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/replicas
-      value: 1
+      value: 3
   target:
     kind: Deployment
     name: frontend
 
-# Override HPA for dev (lower max)
+# Override HPA for prod (lower max)
 - patch: |-
     - op: replace
       path: /spec/minReplicas
-      value: 1
+      value: 3
     - op: replace
       path: /spec/maxReplicas
-      value: 3
+      value: 20
   target:
     kind: HorizontalPodAutoscaler
     name: backend-hpa
+
+#override storage for prod
+- patch: |-
+    - op: replace
+      path: /spec/resources/requests/storage
+      value: 20Gi
+  target:
+    kind: PersistentVolumeClaim
+    name: progres-storage

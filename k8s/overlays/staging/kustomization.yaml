@@ -6,48 +6,48 @@ resources:
 - namespace.yaml
 - ../../base
 
-# Deploy to dev namespace
-namespace: dev
+# Deploy to staging namespace
+namespace: staging
 
-# Add -dev suffix to all resources
-nameSuffix: -dev
+# Add -staging suffix to all resources
+nameSuffix: -staging
 
 # Add common labels to everything
 commonLabels:
-  environment: dev
+  environment: staging
   app.kubernetes.io/managed-by: kustomize
 
-# Override ConfigMap for dev
+# Override ConfigMap for staging
 configMapGenerator:
 - name: backend-config
   behavior: merge
   literals:
-  - DB_HOST=postgres-dev  
-  - REDIS_HOST=redis-dev  
+  - DB_HOST=postgres-staging 
+  - REDIS_HOST=redis-staging 
   - LOG_LEVEL=debug   
 
 - name: postgres-config
   behavior: merge
   literals:
-  - POSTGRES_DB=taskdb-dev
+  - POSTGRES_DB=taskdb-staging
 
 
-# Override Secret for dev
+# Override Secret for staging
 secretGenerator:
 - name: backend-secret
   behavior: merge
   literals:
-  - DB_PASSWORD=devpassword123 
+  - DB_PASSWORD=staging_password123 
 
 - name: postgres-secret
   behavior: merge
   literals:
-  - POSTGRES_PASSWORD:devdbpassword123
+  - POSTGRES_PASSWORD:staging_dbpassword123
 
 patchesStrategicMerge:
 - secrets-patch.yaml
 
-# Set resource limits (lower for dev)
+# Set resource limits (lower for staging)
 patches:
 - patch: |-
     - op: replace
@@ -61,7 +61,7 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/replicas
-      value: 1
+      value: 2
   target:
     kind: Deployment
     name: backend
@@ -70,19 +70,19 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/replicas
-      value: 1
+      value: 2
   target:
     kind: Deployment
     name: frontend
 
-# Override HPA for dev (lower max)
+# Override HPA for staging (lower max)
 - patch: |-
     - op: replace
       path: /spec/minReplicas
-      value: 1
+      value: 2
     - op: replace
       path: /spec/maxReplicas
-      value: 3
+      value: 5
   target:
     kind: HorizontalPodAutoscaler
     name: backend-hpa
