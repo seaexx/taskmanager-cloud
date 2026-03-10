@@ -42,10 +42,7 @@ secretGenerator:
 - name: postgres-secret
   behavior: merge
   literals:
-  - POSTGRES_PASSWORD:devdbpassword123
-
-patchesStrategicMerge:
-- secrets-patch.yaml
+  - POSTGRES_PASSWORD=devdbpassword123
 
 # Set resource limits (lower for dev)
 patches:

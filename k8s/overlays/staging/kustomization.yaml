@@ -42,7 +42,7 @@ secretGenerator:
 - name: postgres-secret
   behavior: merge
   literals:
-  - POSTGRES_PASSWORD:staging_dbpassword123
+  - POSTGRES_PASSWORD=staging_dbpassword123
 
 patchesStrategicMerge:
 - secrets-patch.yaml
