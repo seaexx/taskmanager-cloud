@@ -42,10 +42,8 @@ secretGenerator:
 - name: postgres-secret
   behavior: merge
   literals:
-  - POSTGRES_PASSWORD:prod_dbpassword123
+  - POSTGRES_PASSWORD=prod_dbpassword123
 
-patchesStrategicMerge:
-- secrets-patch.yaml
 
 # Set resource limits ( max for prod)
 patches:

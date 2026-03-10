@@ -44,8 +44,7 @@ secretGenerator:
   literals:
   - POSTGRES_PASSWORD=staging_dbpassword123
 
-patchesStrategicMerge:
-- secrets-patch.yaml
+
 
 # Set resource limits (lower for staging)
 patches:
