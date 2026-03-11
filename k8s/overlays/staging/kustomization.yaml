@@ -22,6 +22,7 @@ configMapGenerator:
 - name: backend-config
   behavior: merge
   literals:
+  - DB_NAME=taskdb-staging
   - DB_HOST=postgres-staging 
   - REDIS_HOST=redis-staging 
   - LOG_LEVEL=debug   
@@ -31,13 +32,18 @@ configMapGenerator:
   literals:
   - POSTGRES_DB=taskdb-staging
 
+- name: frontend-config
+  behavior: merge
+  literals:
+  - API_URL=http://backend-staging:3000
+
 
 # Override Secret for staging
 secretGenerator:
 - name: backend-secret
   behavior: merge
   literals:
-  - DB_PASSWORD=staging_password123 
+  - DB_PASSWORD=staging_dbpassword123 
 
 - name: postgres-secret
   behavior: merge
@@ -55,6 +61,14 @@ patches:
   target:
     kind: Deployment
     name: backend
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: 100m
+  target:
+    kind: Deployment
+    name: postgres
 
 # Backend replicas
 - patch: |-
@@ -85,3 +99,6 @@ patches:
   target:
     kind: HorizontalPodAutoscaler
     name: backend-hpa
+
+patchesStrategicMerge:
+  - ingress-patch.yaml

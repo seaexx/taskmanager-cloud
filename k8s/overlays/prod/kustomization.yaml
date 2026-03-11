@@ -22,6 +22,7 @@ configMapGenerator:
 - name: backend-config
   behavior: merge
   literals:
+  - DB_NAME=taskdb-prod
   - DB_HOST=postgres-prod 
   - REDIS_HOST=redis-prod
   - LOG_LEVEL=debug   
@@ -31,13 +32,17 @@ configMapGenerator:
   literals:
   - POSTGRES_DB=taskdb-prod
 
+- name: frontend-config
+  behavior: merge
+  literals:
+  - API_URL=http://backend-prod:3000
 
 # Override Secret for prod
 secretGenerator:
 - name: backend-secret
   behavior: merge
   literals:
-  - DB_PASSWORD=prod_password123 
+  - DB_PASSWORD=prod_dbpassword123 
 
 - name: postgres-secret
   behavior: merge
@@ -54,6 +59,8 @@ patches:
   target:
     kind: Deployment
     name: backend
+
+
 
 # Backend replicas
 - patch: |-
@@ -93,3 +100,6 @@ patches:
   target:
     kind: PersistentVolumeClaim
     name: progres-storage
+
+patchesStrategicMerge:
+  - ingress-patch.yaml

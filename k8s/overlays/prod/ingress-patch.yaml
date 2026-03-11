@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: taskmanager-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: prod.138.197.232.220.nip.io
+    http:
+      paths:
+      - pathType: Prefix
+        path: /api
+        backend:
+          service:
+            name: backend-prod
+            port: 
+              number: 3000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-prod
+            port:
+              number: 80
