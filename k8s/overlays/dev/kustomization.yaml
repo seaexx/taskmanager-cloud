@@ -22,9 +22,15 @@ configMapGenerator:
 - name: backend-config
   behavior: merge
   literals:
+  - DB_NAME=taskdb-dev
   - DB_HOST=postgres-dev  
   - REDIS_HOST=redis-dev  
   - LOG_LEVEL=debug   
+
+- name: frontend-config
+  behavior: merge
+  literals:
+  - API_URL=http://backend-dev:3000
 
 - name: postgres-config
   behavior: merge
@@ -37,7 +43,7 @@ secretGenerator:
 - name: backend-secret
   behavior: merge
   literals:
-  - DB_PASSWORD=devpassword123 
+  - DB_PASSWORD=devdbpassword123 
 
 - name: postgres-secret
   behavior: merge
@@ -53,6 +59,14 @@ patches:
   target:
     kind: Deployment
     name: backend
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: 100m
+  target:
+    kind: Deployment
+    name: postgres
 
 # Backend replicas
 - patch: |-
@@ -83,3 +97,6 @@ patches:
   target:
     kind: HorizontalPodAutoscaler
     name: backend-hpa
+
+patchesStrategicMerge:
+  - ingress-patch.yaml

@@ -6,3 +6,4 @@ resources:
 - frontend
 - redis
 - postgres
+- ingress.yaml

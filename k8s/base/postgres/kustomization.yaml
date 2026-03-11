@@ -15,5 +15,5 @@ secretGenerator:
   - name: postgres-secret
     literals:
       - POSTGRES_USER=postgres
-        POSTGRES_PASSWORD=REPLACE_ME_IN_OVERLAY
+      - POSTGRES_PASSWORD=REPLACE_ME_IN_OVERLAY
 
