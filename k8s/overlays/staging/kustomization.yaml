@@ -65,7 +65,7 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/resources/requests/cpu
-      value: 100m
+      value: 50m
   target:
     kind: Deployment
     name: postgres
@@ -95,7 +95,7 @@ patches:
       value: 2
     - op: replace
       path: /spec/maxReplicas
-      value: 5
+      value: 3
   target:
     kind: HorizontalPodAutoscaler
     name: backend-hpa
