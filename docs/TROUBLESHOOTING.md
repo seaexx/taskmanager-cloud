@@ -22,3 +22,17 @@ volumeMounts:
 ```bash
 docker buildx build --platform linux/amd64 -t image:latest .
 ```
+Issue: Frontend couldn't connect to backend - "Error connecting to server"
+Root cause: Ingress rewrite annotation stripping /api path before forwarding to backend
+What we did:
+
+Verified backend pod running and connected to postgres/redis ✅
+Confirmed ingress routing configured: /api → backend, / → frontend ✅
+Tested API endpoint - got 404 error
+Discovered nginx.ingress.kubernetes.io/rewrite-target: / annotation
+This caused /api/health → rewritten to /health → backend 404
+Removed rewrite annotation from ingress
+Backend now receives full /api/* paths correctly ✅
+
+Fix: Removed nginx.ingress.kubernetes.io/rewrite-target annotation from dev ingress configuration
+Result: Full-stack app working - frontend communicating with backend through ingress routing
