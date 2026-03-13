@@ -182,3 +182,5 @@ app.delete('/api/tasks/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
+// CI/CD test - automatic deployment!
