@@ -74,6 +74,7 @@ jobs:
     # Step 7: Configure kubectl with DigitalOcean
     - name: Configure kubectl
       run: |
+        mkdir -p ${HOME}/.kube
         echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > ${HOME}/.kube/config
         chmod 600 ${HOME}/.kube/config
     
