@@ -1,0 +1,108 @@
+name: Deploy to Production
+
+# Trigger on push to main branch
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'k8s/**'
+      - '.github/workflows/deploy-prod.yml'
+
+# Trigger manually from GitHub UI
+  workflow_dispatch:
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  REGISTRY: docker.io
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy to Production
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Step 1: Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # Step 2: Set up Docker Buildx (multi-platform builds)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    # Step 3: Login to Docker Hub
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    
+    # Step 4: Build and push backend image
+    - name: Build and push backend
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        platforms: linux/amd64
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-backend:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-backend:${{ github.sha }}
+        cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-backend:latest
+        cache-to: type=inline
+    
+    # Step 5: Build and push frontend image
+    - name: Build and push frontend
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        platforms: linux/amd64
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-frontend:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-frontend:${{ github.sha }}
+        cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-frontend:latest
+        cache-to: type=inline
+    
+    # Step 6: Set up kubectl
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+    
+    # Step 7: Configure kubectl with DigitalOcean
+    - name: Configure kubectl
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > ${HOME}/.kube/config
+        chmod 600 ${HOME}/.kube/config
+    
+    # Step 8: Deploy to production
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -k k8s/overlays/prod
+    
+    # Step 9: Wait for rollout to complete
+    - name: Wait for deployment
+      run: |
+        kubectl rollout status deployment/backend-prod -n prod --timeout=5m
+        kubectl rollout status deployment/frontend-prod -n prod --timeout=5m
+    
+    # Step 10: Verify deployment
+    - name: Verify deployment
+      run: |
+        echo "Checking pod status..."
+        kubectl get pods -n prod
+        
+        echo "Checking service endpoints..."
+        kubectl get svc -n prod
+        
+        echo "Checking ingress..."
+        kubectl get ingress -n prod
+    
+    # Step 11: Notify success
+    - name: Deployment successful
+      if: success()
+      run: |
+        echo "✅ Deployment to production successful!"
+        echo "🚀 Application is live at: https://prod.138.197.232.220.nip.io"
