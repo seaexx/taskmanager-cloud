@@ -107,3 +107,14 @@ jobs:
       run: |
         echo "✅ Deployment to production successful!"
         echo "🚀 Application is live at: https://prod.138.197.232.220.nip.io"
+    
+    # Step 12: Check Metrics
+    - name: Verify monitoring
+      run: |
+        echo "Checking Prometheus Targets..."
+        # Wait for Prometheus to scrape new pods
+        sleep 30
+
+        echo "Checking if new pods are being monitored.."
+        kubectl get servicemonitor -n prod
+        
