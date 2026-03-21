@@ -9,10 +9,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - prod.138.197.232.220.nip.io
+    - prod.178.128.132.233.nip.io
     secretName: taskmanager-tls-prod
   rules:
-  - host: prod.138.197.232.220.nip.io
+  - host: prod.178.128.132.233.nip.io
     http:
       paths:
       - pathType: Prefix
