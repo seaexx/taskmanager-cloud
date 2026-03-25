@@ -90,7 +90,7 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/minReplicas
-      value: 2
+      value: 1
     - op: replace
       path: /spec/maxReplicas
       value: 3
