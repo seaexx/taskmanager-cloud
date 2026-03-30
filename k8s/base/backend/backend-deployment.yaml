@@ -15,7 +15,10 @@ spec:
       initContainers:
       - name: wait-for-postgres
         image: busybox
-        command: ['sh', '-c', 'until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done']
+        command: ['sh', '-c', 'until nc -z $DB_HOST 5432; do echo waiting for postgres; sleep 2; done']
+        envFrom:
+        - configMapRef:
+            name: backend-config
       containers:
       - name: backend
         image: seaexx/task-manager-backend:latest
