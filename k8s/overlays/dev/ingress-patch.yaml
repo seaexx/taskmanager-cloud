@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - dev.178.128.132.233.nip.io
+    - dev.157.230.65.42.nip.io
     secretName: taskmanager-tls-dev
   rules:
-  - host: dev.178.128.132.233.nip.io
+  - host: dev.157.230.65.42.nip.io
     http:
       paths:
       - pathType: Prefix

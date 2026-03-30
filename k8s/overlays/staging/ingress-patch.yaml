@@ -9,10 +9,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - staging.138.197.232.220.nip.io
+    - staging.157.230.65.42.nip.io
     secretName: taskmanager-tls-staging
   rules:
-  - host: staging.138.197.232.220.nip.io
+  - host: staging.157.230.65.42.nip.io
     http:
       paths:
       - pathType: Prefix
