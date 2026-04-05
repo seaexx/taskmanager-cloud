@@ -8,7 +8,7 @@ on:
       - 'backend/**'
       - 'frontend/**'
       - 'k8s/**'
-      - '.github/workflows/deploy-prod.yml'
+      - '.github/workflows/build.yaml'
   workflow_dispatch:
 
 env:
