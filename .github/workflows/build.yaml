@@ -1,0 +1,83 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'k8s/**'
+      - '.github/workflows/deploy-prod.yml'
+  workflow_dispatch:
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  REGISTRY: docker.io
+
+jobs:
+  build-and-push:
+    name: Build, Push and Update Manifests 
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Step 1: Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    # Step 2: Set up Docker Buildx
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    # Step 3: Login to Docker Hub
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    
+    # Step 4: Build and push backend image
+    - name: Build and push backend
+      uses: docker/build-push-action@v5
+      with:
+        context: ./docker/backend
+        platforms: linux/amd64
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-backend:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-backend:${{ github.sha }}
+        cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-backend:latest
+        cache-to: type=inline
+    
+    # Step 5: Build and push frontend image
+    - name: Build and push frontend
+      uses: docker/build-push-action@v5
+      with:
+        context: ./docker/frontend
+        platforms: linux/amd64
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-frontend:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-frontend:${{ github.sha }}
+        cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-frontend:latest
+        cache-to: type=inline
+
+    # Step 6: Update image tags in manifests
+    - name: Update image tags in manifests
+      run: |
+        sed -i "s|seaexx/taskmanager-backend:.*|seaexx/taskmanager-backend:${{ github.sha }}|g" k8s/base/backend/backend-deployment.yaml
+        sed -i "s|seaexx/taskmanager-frontend:.*|seaexx/taskmanager-frontend:${{ github.sha }}|g" k8s/base/frontend/frontend-deployment.yaml
+        git config user.email "ci@github.com"
+        git config user.name "GitHub Actions"
+        git add k8s/
+        git commit -m "ci: update image tags to ${{ github.sha }}"
+        git push
+
+    # Step 7: Notify success
+    - name: Deployment successful
+      if: success()
+      run: |
+        echo "✅ Deployment to production successful!"
+        echo "🚀 ArgoCD will sync the new image tags shortly"
