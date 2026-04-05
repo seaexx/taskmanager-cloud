@@ -72,8 +72,8 @@ jobs:
         git config user.email "ci@github.com"
         git config user.name "GitHub Actions"
         git add k8s/
-        git commit -m "ci: update image tags to ${{ github.sha }}"
-        git push
+        git diff --staged --quiet || git commit -m "ci: update image tags to ${{ github.sha }}"
+        git push || true 
 
     # Step 7: Notify success
     - name: Deployment successful
