@@ -14,6 +14,8 @@ spec:
       labels:
         app: postgres
     spec:
+      strategy:
+        type: Recreate #this terminates existing pods before creating new ones, ensuring only one instance runs at a time
       containers:
       - name: postgres
         image: postgres:15-alpine
