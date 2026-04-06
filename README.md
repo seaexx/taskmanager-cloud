@@ -16,14 +16,14 @@ A production Kubernetes deployment demonstrating Infrastructure as Code, GitOps,
 **Tools**: Docker, Kustomize, Helm
 
 ## Structure
-terraform/       # Infrastructure as code
-k8s/             # Kubernetes manifests
-base/          # Base configs
-overlays/      # Environment-specific configs
-argocd-apps/     # GitOps applications
-.github/         # CI/CD workflows
+- terraform/       # Infrastructure as code
+- k8s/             # Kubernetes manifests
+- base/          # Base configs
+- overlays/      # Environment-specific configs
+- argocd-apps/     # GitOps applications
+- .github/         # CI/CD workflows
+  
 ## How It Works
-
 1. Push code to GitHub
 2. GitHub Actions builds Docker image
 3. ArgoCD detects changes and deploys
