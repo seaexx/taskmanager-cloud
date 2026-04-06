@@ -1,5 +1,22 @@
 # TaskManager Cloud
-A production Kubernetes deployment demonstrating Infrastructure as Code, GitOps, and automated CI/CD workflows.
+A full-stack task management application built specifically as a practical learning vehicle for DevOps engineering and cloud-native deployment. A production Kubernetes deployment demonstrating Infrastructure as Code, GitOps, and automated CI/CD workflows.
+
+# What It Is
+A complete web application with:
+Frontend: React-based UI for managing tasks
+Backend: Node.js/Express API
+Database: PostgreSQL for persistent storage
+Architecture: Three-tier containerized application
+
+It's deliberately simple as an application but complex as an infrastructure challenge:
+The app itself is intentionally basic (CRUD operations on tasks) because the goal isn't to learn React or Node — it's to learn how to deploy, scale, monitor, and maintain applications in production-like environments.
+
+# What makes it perfect for DevOps learning:
+- Real multi-service architecture — not just a single container, but frontend + backend + database with actual networking between them
+- Stateful components — PostgreSQL requires persistent volumes, backups, migrations
+- Environment complexity — managing dev/staging/prod configurations
+- Real infrastructure decisions — load balancing, ingress, TLS certificates, resource limits
+- Actual problems to solve — not tutorial problems, but real issues like ARM/AMD64 architecture mismatches, storage provisioning, memory constraints
 
 ## What I Built
 - Kubernetes cluster provisioned with Terraform
