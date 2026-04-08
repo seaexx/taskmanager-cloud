@@ -1,0 +1,36 @@
+# Prometheus configuration
+prometheus:
+  prometheusSpec:
+    retention: 7d  #  metrics for 7 days
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi  # 10GB for metrics
+
+# Grafana configuration
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.157.230.65.42.nip.io
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.157.230.65.42.nip.io
+
+# AlertManager configuration
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
